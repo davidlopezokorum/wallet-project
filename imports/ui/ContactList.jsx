@@ -15,20 +15,25 @@ export const ContactList = () => {
     return ContactsCollection.find({}).fetch();
   });
 
+  
+
   const removeContact = (e,_id) => {
     e.preventDefault();
     Meteor.call('contacts.remove', {contactId: _id}, (errorResponse) => {
       if(errorResponse){
-        alert(errorResponse.error);
+        setErrorMsg(errorResponse.error);
       }else{
         setSuccessMsg("User deleted");
+        setTimeout(() => {
+          setSuccessMsg();
+        }, 5000)
       }
     });
   }
 
   return (
     <>
-      <Container>
+      <Container className="mt-3">
         {errorMsg && <ErrorAlert message={errorMsg}/>}
         {successMsg && <SuccessAlert message={successMsg}/>}
         <Row className="d-flex">
