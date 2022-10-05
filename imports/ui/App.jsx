@@ -1,12 +1,13 @@
-import React from 'react';
-import { ContactForm } from './ContactForm';
-import { ContactList } from './ContactList';
-
+import React from "react";
+import { ContactForm } from "./ContactForm";
+import { ContactList } from "./ContactList";
 
 export const App = () => (
   <div>
-    <h1 className='text-light bg-secondary'>Meteor Wallet</h1>
-    <ContactForm/>
-    <ContactList/>
+    <div className="d-flex align-items" style={{ backgroundColor: "#6600CC" }}>
+      <h2 className="text-light text-center">Meteor Wallet</h2>
+    </div>
+    <ContactForm />
+    <ContactList />
   </div>
 );
