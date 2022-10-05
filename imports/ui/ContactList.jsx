@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ContactsCollection } from "../api/Contacts.collection";
-import { useTracker } from "meteor/react-meteor-data";
+import { useSubscribe, useFind } from "meteor/react-meteor-data";
 import { Container, Row, Col } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import { ErrorAlert } from "./components/ErrorAlert";
@@ -11,11 +11,14 @@ export const ContactList = () => {
   const [errorMsg, setErrorMsg] = useState();
   const [successMsg, setSuccessMsg] = useState();
 
-  const contact = useTracker(() => {
-    return ContactsCollection.find({}).fetch();
+  const isLoading = useSubscribe('allContacts');
+  const contacts = useFind(() => {
+    return ContactsCollection.find({}); 
   });
 
-  
+  if(isLoading()){
+    return <h4>Loading ...</h4>
+  }
 
   const removeContact = (e,_id) => {
     e.preventDefault();
@@ -40,7 +43,7 @@ export const ContactList = () => {
           <Col>
             <h3 className="ml-3">List contacts</h3>
             <ol>
-              {contact.map((contact, idx) => (
+              {contacts.map((contact, idx) => (
                 <li key={idx}>
                   {contact.name} - {contact.email} - {contact.number}
                   <Button onClick={(e) => removeContact(e,contact._id)} className="ml-3" variant="danger">
