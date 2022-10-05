@@ -1,48 +1,93 @@
 import React, { useState } from "react";
-import { ContactsCollection } from "../api/Contacts.collection";
+import { Button } from "@mui/material";
+import { Container, Row, Col } from "react-bootstrap";
+import { Meteor } from "meteor/meteor";
+import { ErrorAlert } from "./components/ErrorAlert";
+import { SuccessAlert } from "./components/SuccessAlert";
 
 export const ContactForm = () => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [number, setNumber] = useState("");
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
-  const [name, setName] = useState();
-  const [email, setEmail] = useState();
-  const [number, setNumber] = useState();
+  const showError = (message) => {
+    setError(message);
+    setTimeout(() => {
+      setError();
+    }, 5000);
+  };
+
+  const showSuccess = (message) => {
+    setSuccessMessage(message);
+    setTimeout(() => {
+      setSuccessMessage();
+    }, 5000);
+  };
 
   const saveContact = (e) => {
     e.preventDefault();
-    console.log({name,email,number})
-    ContactsCollection.insert({name,email,number})
+    console.log({ name, email, number });
+    Meteor.call("contacts.insert", { name, email, number }, (errorResponse) => {
+      if (errorResponse) {
+        showError(errorResponse.error);
+      } else {
+        setName();
+        setEmail();
+        setNumber();
+        setError();
+        showSuccess("Contact saved");
+      }
+    });
   };
 
   return (
-    <form>
-      <div>
-        <label htmlFor="name">Name:</label>
-        <input
-          type="text"
-          id="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <label htmlFor="email">Email:</label>
-        <input
-          type="text"
-          id="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <label htmlFor="number">Number:</label>
-        <input
-          type="number"
-          id="number"
-          value={number}
-          onChange={(e) => setNumber(e.target.value)}
-        />
-      </div>
-      <div>
-        <button type="submit" onClick={(e) => saveContact(e)}>
-          Save contact
-        </button>
-      </div>
-    </form>
+    <Container>
+      <form>
+        {error && <ErrorAlert message={error} />}
+        {successMessage && <SuccessAlert message={successMessage} />}
+        <Row className="mt-4">
+          <Col>
+            <label htmlFor="name">Name:</label>
+            <input
+              type="text"
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </Col>
+          <Col>
+            <label htmlFor="email">Email:</label>
+            <input
+              type="text"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </Col>
+          <Col>
+            <label htmlFor="number">Number:</label>
+            <input
+              type="number"
+              id="number"
+              value={number}
+              onChange={(e) => setNumber(e.target.value)}
+            />
+          </Col>
+        </Row>
+        <Row className="mt-5 d-flex">
+          <Col className="text-center">
+            <Button
+              variant="contained"
+              type="submit"
+              onClick={(e) => saveContact(e)}
+            >
+              Save contact
+            </Button>
+          </Col>
+        </Row>
+      </form>
+    </Container>
   );
 };
