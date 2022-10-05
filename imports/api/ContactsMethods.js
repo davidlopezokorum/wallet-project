@@ -10,5 +10,8 @@ Meteor.methods({
       throw new Meteor.Error("Number is required.")
     }
     return ContactsCollection.insert({ name, email, number });
+  },
+  'contacts.remove'({contactId}) {
+    return ContactsCollection.remove(contactId);
   }
 })
