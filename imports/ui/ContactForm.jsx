@@ -44,6 +44,7 @@ export const ContactForm = () => {
 
   return (
     <Container className="mt-4">
+      <h3 className="text-center">Agregar contacto</h3>
       <form>
         {error && <ErrorAlert message={error} />}
         {successMessage && <SuccessAlert message={successMessage} />}

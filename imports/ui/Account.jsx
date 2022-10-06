@@ -9,6 +9,8 @@ import {
 } from "react-bootstrap";
 import { Button } from "@mui/material";
 import { ModalWallet } from "./components/Modal";
+import { useSubscribe, useFind } from "meteor/react-meteor-data";
+import { ContactsCollection } from "../api/Contacts.collection";
 
 export const Account = () => {
   const wallet = {
@@ -20,6 +22,16 @@ export const Account = () => {
   const [modalShow, setModalShow] = useState(false);
   const [isTranfering, setIsTranfering] = useState(false);
   const [amount, setAmount] = useState(0);
+  const [contactToSend, setContactToSend] = useState();
+
+  const isLoading = useSubscribe("allContacts");
+  const contacts = useFind(() => {
+    return ContactsCollection.find({});
+  });
+
+  if (isLoading()) {
+    return <h4>Loading ...</h4>;
+  }
 
   return (
     <>
@@ -73,22 +85,48 @@ export const Account = () => {
           <>
             {!isTranfering && (
               <div className="ml-4 mb-3">
-                <DropdownButton
-                  id="dropdown-basic-button"
-                  title="Seleccionar contacto"
+                {/* <Dropdown
+                  id="dropdown-button"
                   variant="secondary"
                 >
-                  <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                  <Dropdown.Item href="#/action-2">
-                    Another action
-                  </Dropdown.Item>
-                  <Dropdown.Item href="#/action-3">
-                    Something else
-                  </Dropdown.Item>
-                </DropdownButton>
+                  <Dropdown.Toggle variant="secondary">
+                    Open Menu
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu
+                    onChange={(e) => setContactToSend(e.target.value)}
+                  >
+                    {contacts.map((contac, idx) => (
+                      <Dropdown.Item
+                        value={contac.name}
+                        key={idx}
+                      >
+                        {contac.name}
+                      </Dropdown.Item>
+                    ))}
+                  </Dropdown.Menu>
+                </Dropdown> */}
+                <select
+                  className="rounded"
+                  id="contactToSend"
+                  onChange={(e) => {
+                    setContactToSend(e.target.value);
+                  }}
+                >
+                  {contacts.length === 0 ? <option>No tienes contactos</option> : <></>}
+                  {contacts?.map((contact, idx) => (
+                    <option
+                      value={contact.name}
+                      key={idx}
+                    >
+                      {contact.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             )}
-            <label className="ml-4" htmlFor="name">Valor:</label>
+            <label className="ml-4" htmlFor="name">
+              Valor:
+            </label>
             <input
               className="rounded ml-2"
               type="number"
