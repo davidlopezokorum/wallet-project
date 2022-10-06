@@ -25,7 +25,7 @@ export const ContactList = () => {
       if (errorResponse) {
         setErrorMsg(errorResponse.error);
       } else {
-        setSuccessMsg("User deleted");
+        setSuccessMsg("Contacto eliminado");
         setTimeout(() => {
           setSuccessMsg();
         }, 5000);

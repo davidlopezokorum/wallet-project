@@ -4,11 +4,9 @@ import { check } from 'meteor/check'
 Meteor.methods({
   'contacts.insert'({ name, email, number }) {
     if(!name){
-      throw new Meteor.Error("Name is required.")
-    }else if(!email){
-      throw new Meteor.Error("Email is required.")
+      throw new Meteor.Error("Nombre requerido.")
     }else if(!number){
-      throw new Meteor.Error("Number is required.")
+      throw new Meteor.Error("Número requerido.")
     }
     return ContactsCollection.insert({ name, email, number });
   },

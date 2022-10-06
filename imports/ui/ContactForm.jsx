@@ -37,7 +37,7 @@ export const ContactForm = () => {
         setEmail();
         setNumber();
         setError();
-        showSuccess("Contact saved");
+        showSuccess("Contacto guardado");
       }
     });
   };
