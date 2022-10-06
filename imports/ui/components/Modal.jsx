@@ -24,6 +24,7 @@ export const ModalWallet = (props) => {
       <Modal.Body>{props.body}</Modal.Body>
       <Modal.Footer>
         <Button
+          disabled={props.contacts ? true : false}
           variant="contained"
           onClick={buttonActions}
         >

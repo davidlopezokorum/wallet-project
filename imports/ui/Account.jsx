@@ -160,6 +160,7 @@ export const Account = () => {
         footer={isTranfering ? "Tranferir" : "Agregar"}
         onHide={() => setModalShow(false)}
         sendmoney={sendMoney}
+        contacts={contacts.length === 0 ? true : false}
       />
     </>
   );
