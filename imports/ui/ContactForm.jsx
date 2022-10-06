@@ -43,7 +43,7 @@ export const ContactForm = () => {
   };
 
   return (
-    <Container>
+    <Container className="mt-4">
       <form>
         {error && <ErrorAlert message={error} />}
         {successMessage && <SuccessAlert message={successMessage} />}
@@ -51,6 +51,7 @@ export const ContactForm = () => {
           <Col>
             <label htmlFor="name">Name:</label>
             <input
+              className="rounded ml-2"
               type="text"
               id="name"
               value={name}
@@ -60,7 +61,8 @@ export const ContactForm = () => {
           <Col>
             <label htmlFor="email">Email:</label>
             <input
-              type="text"
+              className="rounded ml-2"
+              type="email"
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -69,6 +71,7 @@ export const ContactForm = () => {
           <Col>
             <label htmlFor="number">Number:</label>
             <input
+              className="rounded ml-2"
               type="number"
               id="number"
               value={number}
@@ -76,14 +79,14 @@ export const ContactForm = () => {
             />
           </Col>
         </Row>
-        <Row className="mt-5 d-flex">
+        <Row className="mt-3 d-flex">
           <Col className="text-center">
             <Button
               variant="contained"
               type="submit"
               onClick={(e) => saveContact(e)}
             >
-              Save contact
+              Guardar contacto
             </Button>
           </Col>
         </Row>

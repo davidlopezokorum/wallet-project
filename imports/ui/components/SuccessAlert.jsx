@@ -3,7 +3,7 @@ import Alert from "@mui/material/Alert";
 
 export const SuccessAlert = ({message}) => {
   return(
-    <Alert variant="outlined" severity="success">
+    <Alert severity="success">
       {message}
     </Alert>
   )
