@@ -1,7 +1,7 @@
 import { Meteor } from "meteor/meteor";
 import React, { useState } from "react";
 import { Card, Col, Row, Container } from "react-bootstrap";
-import { Button } from "@mui/material";
+import { Button, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { ModalWallet } from "./components/Modal";
 import { useSubscribe, useFind } from "meteor/react-meteor-data";
 import { ContactsCollection } from "../api/Contacts.collection";
@@ -46,16 +46,12 @@ export const Account = () => {
   }
 
   const sendMoney = () => {
-    let user = {};
-    if(isTranfering){
-      user = ContactsCollection.findOne({ _id: contactToSend });
-    }
     Meteor.call(
       "transactions.insert",
       {
         isTransfering: isTranfering,
         sourceWalletId: wallet._id,
-        destinationWalletId: user?.number || "",
+        destinationWalletId: contactToSend?.number || "",
         amount: Number(amount),
       },
       (errorRes) => {
@@ -108,7 +104,9 @@ export const Account = () => {
               </Row>
             </Col>
             <Col className="text-center mx-auto mt-5">
-              <h5>{wallet.balance} {wallet.currency}</h5>
+              <h5>
+                {wallet.balance} {wallet.currency}
+              </h5>
             </Col>
           </Row>
         </Container>
@@ -126,23 +124,23 @@ export const Account = () => {
           <>
             {isTranfering && (
               <div className="ml-4 mb-3">
-                <select
-                  className="rounded"
-                  value={contactToSend}
-                  onChange={(e) => setContactToSend(e.target.value)}
-                >
-                  {contacts.length === 0 ? (
-                    <option>No tienes contactos</option>
-                  ) : (
-                    <></>
-                  )}
+
+                <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-label">Seleccionar contacto</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={contactToSend}
+                    label="Seleccionar contacto"
+                    onChange={(e) => setContactToSend(e.target.value)}
+                  >
                   {contacts?.map((contact, idx) => (
-                    <option value={contact._id} key={idx}>
-                    {/* <option value={contact} key={idx}> */}
+                    <MenuItem value={contact} key={idx}>
                       {contact.name}
-                    </option>
+                    </MenuItem>
                   ))}
-                </select>
+                  </Select>
+                </FormControl>
               </div>
             )}
             <label className="ml-4" htmlFor="name">
