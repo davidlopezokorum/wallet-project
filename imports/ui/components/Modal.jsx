@@ -4,6 +4,11 @@ import Modal from "react-bootstrap/Modal";
 
 export const ModalWallet = (props) => {
 
+  const buttonActions = () => {
+    props.onHide();
+    props.sendmoney();
+  }
+
   return (
     <Modal
       {...props}
@@ -20,7 +25,7 @@ export const ModalWallet = (props) => {
       <Modal.Footer>
         <Button
           variant="contained"
-          onClick={props.onHide}
+          onClick={buttonActions}
         >
           {props.footer}
         </Button>

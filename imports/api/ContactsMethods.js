@@ -1,5 +1,6 @@
 import { ContactsCollection } from "./Contacts.collection";
 import { check } from 'meteor/check'
+import { Meteor } from 'meteor/meteor';
 
 Meteor.methods({
   'contacts.insert'({ name, email, number }) {
@@ -13,5 +14,8 @@ Meteor.methods({
   'contacts.remove'({contactId}) {
     check(contactId,String);
     return ContactsCollection.remove(contactId);
+  },
+  'contact.findById'({ id }){
+    return ContactsCollection.findOne({ _id: id });
   }
 })

@@ -1,16 +1,12 @@
+import { Meteor } from "meteor/meteor";
 import React, { useState } from "react";
-import {
-  Card,
-  Col,
-  Row,
-  Container,
-  DropdownButton,
-  Dropdown,
-} from "react-bootstrap";
+import { Card, Col, Row, Container } from "react-bootstrap";
 import { Button } from "@mui/material";
 import { ModalWallet } from "./components/Modal";
 import { useSubscribe, useFind } from "meteor/react-meteor-data";
 import { ContactsCollection } from "../api/Contacts.collection";
+import { ErrorAlert } from "./components/ErrorAlert";
+import { SuccessAlert } from "./components/SuccessAlert";
 
 export const Account = () => {
   const wallet = {
@@ -23,6 +19,22 @@ export const Account = () => {
   const [isTranfering, setIsTranfering] = useState(false);
   const [amount, setAmount] = useState(0);
   const [contactToSend, setContactToSend] = useState();
+  const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+
+  const showError = (message) => {
+    setErrorMsg(message);
+    setTimeout(() => {
+      setErrorMsg();
+    }, 5000);
+  };
+
+  const showSuccess = (message) => {
+    setSuccessMsg(message);
+    setTimeout(() => {
+      setSuccessMsg();
+    }, 5000);
+  };
 
   const isLoading = useSubscribe("allContacts");
   const contacts = useFind(() => {
@@ -33,9 +45,38 @@ export const Account = () => {
     return <h4>Loading ...</h4>;
   }
 
+  const sendMoney = () => {
+    let user = {};
+    if(isTranfering){
+      user = ContactsCollection.findOne({ _id: contactToSend });
+    }
+    Meteor.call(
+      "transactions.insert",
+      {
+        isTransfering: isTranfering,
+        sourceWalletId: wallet._id,
+        destinationWalletId: user?.number || "",
+        amount: Number(amount),
+      },
+      (errorRes) => {
+        if (errorRes) {
+          showError(errorRes.error);
+        } else {
+          showSuccess(isTranfering ? "Dinero enviado" : "Dinero agregado");
+          setModalShow(false);
+          setContactToSend({});
+          setAmount(0);
+          setErrorMsg("");
+        }
+      }
+    );
+  };
+
   return (
     <>
       <Card className="m-5 p-3">
+        {errorMsg && <ErrorAlert message={errorMsg} />}
+        {successMsg && <SuccessAlert message={successMsg} />}
         <Container>
           <Row>
             <Col>
@@ -47,7 +88,7 @@ export const Account = () => {
                   <Button
                     onClick={() => {
                       setModalShow(true);
-                      setIsTranfering(true);
+                      setIsTranfering(false);
                     }}
                     variant="contained"
                   >
@@ -56,7 +97,7 @@ export const Account = () => {
                   <Button
                     onClick={() => {
                       setModalShow(true);
-                      setIsTranfering(false);
+                      setIsTranfering(true);
                     }}
                     variant="contained"
                     className="ml-3"
@@ -66,8 +107,8 @@ export const Account = () => {
                 </Col>
               </Row>
             </Col>
-            <Col className="text-center mx-auto">
-              {wallet.balance} {wallet.currency}
+            <Col className="text-center mx-auto mt-5">
+              <h5>{wallet.balance} {wallet.currency}</h5>
             </Col>
           </Row>
         </Container>
@@ -78,46 +119,26 @@ export const Account = () => {
         show={modalShow}
         title={
           isTranfering
-            ? "Tranferir dinero a mi billetera"
-            : "Tranferir a un contacto"
+            ? "Tranferir a un contacto"
+            : "Tranferir dinero a mi billetera"
         }
         body={
           <>
-            {!isTranfering && (
+            {isTranfering && (
               <div className="ml-4 mb-3">
-                {/* <Dropdown
-                  id="dropdown-button"
-                  variant="secondary"
-                >
-                  <Dropdown.Toggle variant="secondary">
-                    Open Menu
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu
-                    onChange={(e) => setContactToSend(e.target.value)}
-                  >
-                    {contacts.map((contac, idx) => (
-                      <Dropdown.Item
-                        value={contac.name}
-                        key={idx}
-                      >
-                        {contac.name}
-                      </Dropdown.Item>
-                    ))}
-                  </Dropdown.Menu>
-                </Dropdown> */}
                 <select
                   className="rounded"
-                  id="contactToSend"
-                  onChange={(e) => {
-                    setContactToSend(e.target.value);
-                  }}
+                  value={contactToSend}
+                  onChange={(e) => setContactToSend(e.target.value)}
                 >
-                  {contacts.length === 0 ? <option>No tienes contactos</option> : <></>}
+                  {contacts.length === 0 ? (
+                    <option>No tienes contactos</option>
+                  ) : (
+                    <></>
+                  )}
                   {contacts?.map((contact, idx) => (
-                    <option
-                      value={contact.name}
-                      key={idx}
-                    >
+                    <option value={contact._id} key={idx}>
+                    {/* <option value={contact} key={idx}> */}
                       {contact.name}
                     </option>
                   ))}
@@ -132,12 +153,15 @@ export const Account = () => {
               type="number"
               id="numberAmount"
               value={amount}
+              min={0}
+              placeholder={0.0}
               onChange={(e) => setAmount(e.target.value)}
             />
           </>
         }
-        footer={isTranfering ? "Tranferir" : "Enviar"}
+        footer={isTranfering ? "Tranferir" : "Agregar"}
         onHide={() => setModalShow(false)}
+        sendmoney={sendMoney}
       />
     </>
   );
