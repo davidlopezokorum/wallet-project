@@ -1,4 +1,4 @@
-import { ContactsCollection } from "./Contacts.collection";
+import { ContactsCollection } from "../collections/Contacts.collection";
 import { check } from 'meteor/check'
 import { Meteor } from 'meteor/meteor';
 

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ContactsCollection } from "../api/Contacts.collection";
+import { ContactsCollection } from "../api/collections/Contacts.collection";
 import { useSubscribe, useFind } from "meteor/react-meteor-data";
 import { Container, Row, Col, Table } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
@@ -54,7 +54,7 @@ export const ContactList = () => {
                 {contacts.map((contact, idx) => (
                   <tr key={idx}>
                     <td>{contact.name}</td>
-                    <td>{contact.email}</td>
+                    <td>{contact.email ? contact.email : '--'}</td>
                     <td>{contact.number}</td>
                     <td className="text-center">
                       <Button

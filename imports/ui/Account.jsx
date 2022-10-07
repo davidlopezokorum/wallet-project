@@ -1,19 +1,21 @@
 import { Meteor } from "meteor/meteor";
 import React, { useState } from "react";
 import { Card, Col, Row, Container } from "react-bootstrap";
-import { Button, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import {
+  Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import { ModalWallet } from "./components/Modal";
 import { useSubscribe, useFind } from "meteor/react-meteor-data";
-import { ContactsCollection } from "../api/Contacts.collection";
+import { ContactsCollection } from "../api/collections/Contacts.collection";
 import { ErrorAlert } from "./components/ErrorAlert";
 import { SuccessAlert } from "./components/SuccessAlert";
+import { WalletsCollection } from "../api/collections/WalletsCollection";
 
 export const Account = () => {
-  const wallet = {
-    _id: "123456789",
-    balance: 5,
-    currency: "USD",
-  };
 
   const [modalShow, setModalShow] = useState(false);
   const [isTranfering, setIsTranfering] = useState(false);
@@ -36,16 +38,33 @@ export const Account = () => {
     }, 5000);
   };
 
-  const isLoading = useSubscribe("allContacts");
+  const isLoadingContacts = useSubscribe("allContacts");
+  const isLoadingWallets = useSubscribe("wallets");
   const contacts = useFind(() => {
     return ContactsCollection.find({});
   });
+  const [wallet] = useFind(() => WalletsCollection.find());
 
-  if (isLoading()) {
+  if (isLoadingWallets() || isLoadingContacts()) {
     return <h4>Loading ...</h4>;
   }
 
   const sendMoney = () => {
+    Meteor.call(
+      "wallet.transaction",
+      {
+        amount,
+        _id: wallet._id,
+        isTranfering
+      },
+      (errorRes) => {
+        if(errorRes){
+          showError(errorRes.error);
+        } else {
+          showSuccess(isTranfering ? "Dinero enviado" : "Dinero agregado");
+        }
+      }
+    )
     Meteor.call(
       "transactions.insert",
       {
@@ -124,9 +143,10 @@ export const Account = () => {
           <>
             {isTranfering && (
               <div className="ml-4 mb-3">
-
                 <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">Seleccionar contacto</InputLabel>
+                  <InputLabel id="demo-simple-select-label">
+                    Seleccionar contacto
+                  </InputLabel>
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
@@ -134,11 +154,11 @@ export const Account = () => {
                     label="Seleccionar contacto"
                     onChange={(e) => setContactToSend(e.target.value)}
                   >
-                  {contacts?.map((contact, idx) => (
-                    <MenuItem value={contact} key={idx}>
-                      {contact.name}
-                    </MenuItem>
-                  ))}
+                    {contacts?.map((contact, idx) => (
+                      <MenuItem value={contact} key={idx}>
+                        {contact?.name || "Selecciona un contacto"}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </div>
