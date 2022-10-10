@@ -34,7 +34,6 @@ Meteor.methods({
     }
     const cleanTx = schema.clean(args);
     schema.validate(cleanTx);
-    console.log(cleanTx);
     return TransactionCollection.insert({
       type: isTransfering ? "TRANSFER" : "ADD",
       sourceWalletId,

@@ -17,7 +17,8 @@ const ContactSchema = new SimpleSchema({
     type: String
   },
   createdAt:{
-    type: Date
+    type: Date,
+    optional: true
   }
 });
 

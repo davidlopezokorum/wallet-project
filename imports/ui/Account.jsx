@@ -16,7 +16,6 @@ import { SuccessAlert } from "./components/SuccessAlert";
 import { WalletsCollection } from "../api/collections/WalletsCollection";
 
 export const Account = () => {
-
   const [modalShow, setModalShow] = useState(false);
   const [isTranfering, setIsTranfering] = useState(false);
   const [amount, setAmount] = useState(0);
@@ -26,15 +25,16 @@ export const Account = () => {
 
   const showError = (message) => {
     setErrorMsg(message);
+    console.log(message);
     setTimeout(() => {
-      setErrorMsg();
+      setErrorMsg("");
     }, 5000);
   };
 
   const showSuccess = (message) => {
     setSuccessMsg(message);
     setTimeout(() => {
-      setSuccessMsg();
+      setSuccessMsg("");
     }, 5000);
   };
 
@@ -55,16 +55,17 @@ export const Account = () => {
       {
         amount,
         _id: wallet._id,
-        isTranfering
+        isTranfering,
       },
       (errorRes) => {
-        if(errorRes){
+        if (errorRes) {
           showError(errorRes.error);
+          console.log(errorRes);
         } else {
           showSuccess(isTranfering ? "Dinero enviado" : "Dinero agregado");
         }
       }
-    )
+    );
     Meteor.call(
       "transactions.insert",
       {
@@ -132,7 +133,6 @@ export const Account = () => {
       </Card>
 
       <ModalWallet
-        state={modalShow}
         show={modalShow}
         title={
           isTranfering
@@ -148,15 +148,14 @@ export const Account = () => {
                     Seleccionar contacto
                   </InputLabel>
                   <Select
-                    labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     value={contactToSend}
                     label="Seleccionar contacto"
                     onChange={(e) => setContactToSend(e.target.value)}
                   >
                     {contacts?.map((contact, idx) => (
-                      <MenuItem value={contact} key={idx}>
-                        {contact?.name || "Selecciona un contacto"}
+                      <MenuItem value={contact ?? ''} key={idx}>
+                        {contact?.name}
                       </MenuItem>
                     ))}
                   </Select>
@@ -179,8 +178,9 @@ export const Account = () => {
         }
         footer={isTranfering ? "Tranferir" : "Agregar"}
         onHide={() => setModalShow(false)}
+        // sendmoney={() => this.sendMoney.bind()}
         sendmoney={sendMoney}
-        contacts={contacts.length === 0 ? true : false}
+        contacts={contacts.length === 0 ? "1" : "0"}
       />
     </>
   );

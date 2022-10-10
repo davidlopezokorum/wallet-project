@@ -33,10 +33,10 @@ export const ContactForm = () => {
       if (errorResponse) {
         showError(errorResponse.error);
       } else {
-        setName();
-        setEmail();
-        setNumber();
-        setError();
+        setName("");
+        setEmail("");
+        setNumber("");
+        setError("");
         showSuccess("Contacto guardado");
       }
     });
