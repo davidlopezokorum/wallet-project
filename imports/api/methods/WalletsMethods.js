@@ -4,6 +4,7 @@ import { Meteor } from "meteor/meteor";
 Meteor.methods({
   "wallet.transaction"(args){
     const { _id, amount } = args;
+    console.log("🚀 ~ file: WalletsMethods.js ~ line 7 ~ _id", _id)
     if(!_id){
       throw new Meteor.Error("Cuenta requerida.");
     } else if (!amount) {

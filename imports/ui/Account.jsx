@@ -25,7 +25,6 @@ export const Account = () => {
 
   const showError = (message) => {
     setErrorMsg(message);
-    console.log(message);
     setTimeout(() => {
       setErrorMsg("");
     }, 5000);
@@ -50,22 +49,7 @@ export const Account = () => {
   }
 
   const sendMoney = () => {
-    Meteor.call(
-      "wallet.transaction",
-      {
-        amount,
-        _id: wallet._id,
-        isTranfering,
-      },
-      (errorRes) => {
-        if (errorRes) {
-          showError(errorRes.error);
-          console.log(errorRes);
-        } else {
-          showSuccess(isTranfering ? "Dinero enviado" : "Dinero agregado");
-        }
-      }
-    );
+
     Meteor.call(
       "transactions.insert",
       {
@@ -148,13 +132,14 @@ export const Account = () => {
                     Seleccionar contacto
                   </InputLabel>
                   <Select
+                    defaultValue={""}
                     id="demo-simple-select"
                     value={contactToSend}
                     label="Seleccionar contacto"
                     onChange={(e) => setContactToSend(e.target.value)}
                   >
                     {contacts?.map((contact, idx) => (
-                      <MenuItem value={contact ?? ''} key={idx}>
+                      <MenuItem value={contact ?? ""} key={idx}>
                         {contact?.name}
                       </MenuItem>
                     ))}
@@ -178,9 +163,8 @@ export const Account = () => {
         }
         footer={isTranfering ? "Tranferir" : "Agregar"}
         onHide={() => setModalShow(false)}
-        // sendmoney={() => this.sendMoney.bind()}
         sendmoney={sendMoney}
-        contacts={contacts.length === 0 ? "1" : "0"}
+        contacts={contacts.length !== 0 || !isTranfering ? "0" : "1"}
       />
     </>
   );
